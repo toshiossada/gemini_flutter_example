@@ -22,35 +22,34 @@ jobs:
       #   with:
       #     java-version: "12.x"
 
-      # - name: Setup Flutter
-      #   uses: subosito/flutter-action@v1
-      #   with:
-      #     channel: "stable"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
 
       - name: Generate env.json
         run: |
           echo { >> .env
           echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
           echo } >> .env
-          more .env
 
-      # - name: Install dependencies
-      #   run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-      # - name: Format code
-      #   run: dart format --set-exit-if-changed .
+      - name: Format code
+        run: dart format --set-exit-if-changed .
 
-      # - name: Statically analyze
-      #   run: flutter analyze .
+      - name: Statically analyze
+        run: flutter analyze .
 
-      # - name: Run Tests
-      #   run: flutter test
+      - name: Run Tests
+        run: flutter test
 
-      # - name: Build windows.
-      #   run: flutter build windows --release --dart-define-from-file=env.json
+      - name: Build windows.
+        run: flutter build windows --release --dart-define-from-file=env.json
 
-      # - name: Upload Artifact
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: release-apk
-      #     path: build/windows/x64/runner/Release/gemini_example.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-apk
+          path: build/windows/x64/runner/Release/gemini_example.exe
