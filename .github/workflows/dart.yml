@@ -29,9 +29,11 @@ jobs:
 
       - name: Generate env.json
         run: |
-          touch env.json
-          echo {\"API_KEY\": \"${{ secrets.API_KEY }}\"} >> env.json
-          cat env.json
+          touch .env
+          echo { >> .env
+          echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
+          echo } >> .env
+          cat .env
 
       # - name: Install dependencies
       #   run: flutter pub get
