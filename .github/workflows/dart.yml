@@ -32,7 +32,7 @@ jobs:
           echo { >> .env
           echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
           echo } >> .env
-          dir
+          more .env
 
       # - name: Install dependencies
       #   run: flutter pub get
