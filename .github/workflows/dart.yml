@@ -29,7 +29,6 @@ jobs:
 
       - name: Generate env.json
         run: |
-          type nul > your_file.txt
           echo { >> .env
           echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
           echo } >> .env
