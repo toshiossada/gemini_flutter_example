@@ -32,7 +32,6 @@ jobs:
           echo { >> .env
           echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
           echo } >> .env
-          dir
 
       - name: Install dependencies
         run: flutter pub get
@@ -47,10 +46,12 @@ jobs:
         run: flutter test
 
       - name: Build windows.
-        run: flutter build windows --release --dart-define-from-file=.env
+        run: |
+          dir
+          flutter build windows --release --dart-define-from-file=.env
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: release-apk
+          name: release-windows
           path: build/windows/x64/runner/Release/gemini_example.exe
