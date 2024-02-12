@@ -22,18 +22,18 @@ jobs:
       #   with:
       #     java-version: "12.x"
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v1
-        with:
-          channel: "stable"
+      # - name: Setup Flutter
+      #   uses: subosito/flutter-action@v1
+      #   with:
+      #     channel: "stable"
 
       - name: Generate env.json
         run: |
-          touch .env
+          type nul > your_file.txt
           echo { >> .env
           echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
           echo } >> .env
-          cat .env
+          type .env
 
       # - name: Install dependencies
       #   run: flutter pub get
