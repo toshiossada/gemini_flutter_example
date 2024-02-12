@@ -27,11 +27,12 @@ jobs:
         with:
           channel: "stable"
 
-      - name: Generate env.json
+      - name: Generate .env
         run: |
           echo { >> .env
           echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
           echo } >> .env
+          dir
 
       - name: Install dependencies
         run: flutter pub get
@@ -46,7 +47,7 @@ jobs:
         run: flutter test
 
       - name: Build windows.
-        run: flutter build windows --release
+        run: flutter build windows --release --dart-define-from-file=.env
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
