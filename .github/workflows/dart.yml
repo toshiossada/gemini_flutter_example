@@ -53,4 +53,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: release-windows
-          path: build/windows/x64/runner/Release/gemini_example.exe
+          path: build/windows/x64/runner/Release/
