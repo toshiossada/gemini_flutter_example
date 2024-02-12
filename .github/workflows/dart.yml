@@ -46,7 +46,7 @@ jobs:
         run: flutter test
 
       - name: Build windows.
-        run: flutter build windows --release --dart-define-from-file=env.json
+        run: flutter build windows --release
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
