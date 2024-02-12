@@ -29,9 +29,7 @@ jobs:
 
       - name: Generate .env
         run: |
-          echo { >> .env
-          echo \"API_KEY\": \"${{ secrets.API_KEY }}\" >> .env
-          echo } >> .env
+          echo '{ "API_KEY": "${{ secrets.API_KEY }}"}' > .env
 
       - name: Install dependencies
         run: flutter pub get
@@ -47,6 +45,7 @@ jobs:
 
       - name: Build windows.
         run: |
+          pwd
           dir
           flutter build windows --release --dart-define-from-file=.env
 
