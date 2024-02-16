@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:markdown_widget/widget/markdown_block.dart';
-
-import '../models/chat_model.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -15,12 +13,24 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final gemini = Gemini.instance;
-  final messages = <ChatModel>[];
+  var question = '';
+  var answer = '';
+  var isLoading = false;
   final txtController = TextEditingController();
   final ScrollController _controller = ScrollController();
-  var isLoading = false;
   File? file;
+
+  late final GenerativeModel gemini;
+  late final ChatSession _chat;
+  @override
+  void initState() {
+    super.initState();
+    gemini = GenerativeModel(
+      model: 'gemini-pro',
+      apiKey: const String.fromEnvironment('API_KEY'),
+    );
+    _chat = gemini.startChat();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +41,15 @@ class _ChatPageState extends State<ChatPage> {
             child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
-              itemCount: messages.length,
+              itemCount: _chat.history.length,
               controller: _controller,
               itemBuilder: (_, index) {
-                final message = messages[index];
-                final isUser = (message.actor == MessageActor.user);
-
+                final content = _chat.history.toList()[index];
+                final isUser = content.role == 'user';
+                var text = content.parts
+                    .whereType<TextPart>()
+                    .map<String>((e) => e.text)
+                    .join('');
                 return Container(
                   color: isUser ? Colors.green : Colors.blue,
                   child: ListTile(
@@ -44,8 +57,8 @@ class _ChatPageState extends State<ChatPage> {
                     trailing:
                         !isUser ? null : const Icon(FluentIcons.user_clapper),
                     title: SingleChildScrollView(
-                      child: MarkdownBlock(
-                        data: message.message,
+                      child: MarkdownBody(
+                        data: text,
                       ),
                     ),
                   ),
@@ -100,41 +113,35 @@ class _ChatPageState extends State<ChatPage> {
                   controller: txtController,
                   enabled: !isLoading,
                   onSubmitted: (text) async {
+                    final message = text;
                     try {
                       setState(() {
-                        messages.add(
-                            ChatModel(message: text, actor: MessageActor.user));
                         isLoading = true;
                         txtController.clear();
                       });
 
-                      _scrollDown();
-                      late final String answer;
-
                       if (file != null) {
-                        final result = await gemini.textAndImage(
-                            text: text, images: [file!.readAsBytesSync()]);
+                        final imageBytes = await file!.readAsBytes();
+                        final content = Content.multi([
+                          TextPart(message),
+                          DataPart('image/${file!.path.split('.').last}',
+                              imageBytes),
+                        ]);
 
-                        if (result?.output != null) {
-                          answer = result?.output ?? '';
-                        }
+                        final response = await _chat.sendMessage(content);
+
+                        print(response);
                       } else {
-                        var chat = messages
-                            .map((e) => Content(
-                                parts: [Parts(text: e.message)],
-                                role: e.actor.role))
-                            .toList();
-                        final result = await gemini.chat(chat);
-                        if (result?.output != null) {
-                          answer = result?.output ?? '';
-                        }
+                        var response = await _chat.sendMessage(
+                          Content.text(message),
+                        );
+                        var text = response.text;
+
+                        print(text);
                       }
-                      setState(() {
-                        messages.add(ChatModel(
-                            message: answer, actor: MessageActor.gemini));
-                      });
                     } finally {
                       setState(() {
+                        txtController.clear();
                         isLoading = false;
                         file = null;
                         _scrollDown();
@@ -151,6 +158,14 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _scrollDown() {
-    _controller.jumpTo(_controller.position.maxScrollExtent);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _controller.animateTo(
+        _controller.position.maxScrollExtent,
+        duration: const Duration(
+          milliseconds: 750,
+        ),
+        curve: Curves.easeOutCirc,
+      ),
+    );
   }
 }
