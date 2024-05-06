@@ -26,7 +26,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     gemini = GenerativeModel(
-      model: 'gemini-pro',
+      model: 'gemini-1.5-pro-latest',
       apiKey: const String.fromEnvironment('API_KEY'),
     );
     _chat = gemini.startChat();

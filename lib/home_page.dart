@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:gemini_example/pages/chat.dart';
 import 'package:gemini_example/pages/text.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -17,7 +18,7 @@ class _HomePageState extends State<HomePage> {
     return NavigationView(
       appBar: const NavigationAppBar(
         title: Text('GEMINI'),
-        leading: SizedBox.shrink(),
+        leading: Icon(FluentIcons.access_logo),
       ),
       pane: NavigationPane(
         onChanged: (index) {
@@ -40,14 +41,14 @@ class _HomePageState extends State<HomePage> {
           ),
           PaneItem(
             icon: const Icon(FluentIcons.image_crosshair),
-            title: const Text('textAndImage'),
+            title: const Text('Chat'),
             body: const ChatPage(),
             onTap: () {
               setState(() {
                 selected = 1;
               });
             },
-          )
+          ),
         ],
       ),
     );
